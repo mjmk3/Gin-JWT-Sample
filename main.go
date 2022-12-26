@@ -1,8 +1,8 @@
 package main
 
 import (
-	"net/http"
-
+	"Gin-JWT-Sample/api"
+	middlewares "Gin-JWT-Sample/middleware"
 	"github.com/gin-gonic/gin"
 )
 
@@ -11,10 +11,12 @@ func main() {
 	r := gin.Default()
 
 	public := r.Group("/api")
+	public.POST("/register", api.Register)
+	public.POST("/login", api.Login)
 
-	public.POST("/register", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"data": "please register first!"})
-	})
+	protected := r.Group("/api/admin")
+	protected.Use(middlewares.JwtAuthMiddleware())
+	protected.GET("/user", api.CurrentUser)
 
 	r.Run(":5500")
 
