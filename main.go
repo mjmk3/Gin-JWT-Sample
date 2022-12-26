@@ -2,33 +2,20 @@ package main
 
 import (
 	"net/http"
-	"os"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	var loginService service.LoginService = service.StaticLoginService()
-	var jwtService service.JWTService = service.JWTAuthService()
-	var loginController controller.LoginController = controller.LoginHandler(loginService, jwtService)
 
-	server := gin.New()
+	r := gin.Default()
 
-	server.POST("/login", func(ctx *gin.Context) {
-		token := loginController.Login(ctx)
-		if token != "" {
-			ctx.JSON(http.StatusOK, gin.H{
-				"token": token,
-			})
-		} else {
-			ctx.JSON(http.StatusUnauthorized, nil)
-		}
+	public := r.Group("/api")
+
+	public.POST("/register", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"data": "please register first!"})
 	})
-	port := os.Getenv("PORT")
 
-	if port == "" {
-		port = "5500"
-	}
-	server.Run(":" + port)
+	r.Run(":5500")
 
 }
